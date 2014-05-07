@@ -76,9 +76,9 @@
       }
       this.rendering =  function(force) {
         if(_this._nowPlay || force){
-          if(_this._count != _this._oldCount){
+          if(_this._count != _this._oldCount && _this._txtContainers.length){
             //_stage.removeAllChildren();
-            var txtContainer = _this._txtContainers[_this._nowTurn][0];
+            var txtContainer;
             var frame = _this._json.frames[_this._count];
             for(var i=0;i<_this._txtContainers[_this._nowTurn].length;i++){
               txtContainer = _this._txtContainers[_this._nowTurn][i];

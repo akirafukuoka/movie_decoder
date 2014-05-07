@@ -4,14 +4,31 @@ $(function(){
 
   window.onload = function(){
 
-    var movie2 = $("#canvas1").moviedecoder({image:"/images/test.jpg", json:"/json/test.json",onmetadata:forceResize});
-    var movie2 = $("#canvas2").moviedecoder({image:"/images/test2.jpg", json:"/json/test2.json",onmetadata:forceResize});
-    var movie3 = $("#canvas3").moviedecoder({image:"/images/movie20140502183147.png", json:"/json/movie20140502183147.json",onmetadata:forceResize});
+    var movie1 = $("#canvas1").moviedecoder({
+      image:"/images/test.jpg",
+      json:"/json/test.json",
+      onmetadata:forceResize,
+      onload: function(){
+        setMouseEvent($("#canvas1"), movie1);
+      }
+    });
+    var movie2 = $("#canvas2").moviedecoder({
+      image:"/images/test2.jpg",
+      json:"/json/test2.json",
+      onmetadata:forceResize,
+      onload: function(){
+        setMouseEvent($("#canvas2"), movie2);
+      }
+    });
+    var movie3 = $("#canvas3").moviedecoder({
+      image:"/images/movie20140502183147.png",
+      json:"/json/movie20140502183147.json",
+      onmetadata:forceResize,
+      onload: function(){
+        setMouseEvent($("#canvas3"), movie3);
+      }
+    });
     //var movie3 = $("#canvas3").moviedecoder({image:"/images/test3.jpg", json:"/json/test3.json",onmetadata:forceResize});
-
-    setMouseEvent($("#canvas1"), movie1);
-    setMouseEvent($("#canvas2"), movie2);
-    setMouseEvent($("#canvas3"), movie3);
 
     _oldWindowWidth = $(window).width();
 
