@@ -1,0 +1,9 @@
+# Ignore application configuration
+*.DS_Store
+*.sass-cache
+Thumbs.db
+node_modules
+
+# Ignore grunt compiled files
+_compiletemp/*.css
+_compiletemp/*.js
