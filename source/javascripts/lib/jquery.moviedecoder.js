@@ -32,13 +32,21 @@
 
       this._ran = Math.random();
 
-      this._imageData = [
-        {id: "txt_0", src: this.params.image}
-      ];
+      this._imageData = [];
+
+      this._bmp_wn = 0;
+      this._bmp_hn = 0;
+
+      this._loop = this.params.loop;
 
       function init() {
         _this._stage = new createjs.Stage(_this._id);
         $("#"+_this._id).css("background-color","transparent");
+
+        for(var i=0;i<_this.params.image.length;i++){
+          _this._imageData.push({id: "txt_"+i, src: _this.params.image[i]});
+        }
+
         $.ajax({
           type: "GET",
           cache: false,
@@ -65,6 +73,10 @@
 
       function handleLoad(evt) {
         setupTxt(evt.target);
+
+        _this._oldDate = new Date();
+        _this._oldDateTime = _this._oldDate.getTime();
+
         createjs.Ticker.timingMode = createjs.Ticker.RAF;
         createjs.Ticker.on("tick", tick, this);
         _this.params.onload();
@@ -76,13 +88,23 @@
       }
       this.rendering =  function(force) {
         if(_this._nowPlay || force){
-          if(_this._count != _this._oldCount && _this._txtContainers.length){
+          if(_this._count != _this._oldCount && _this._count < _this._json.frames.length && _this._txtContainers.length){
             //_stage.removeAllChildren();
+            var n = (this._bmp_wn*this._bmp_hn);
             var txtContainer;
             var frame = _this._json.frames[_this._count];
-            for(var i=0;i<_this._txtContainers[_this._nowTurn].length;i++){
-              txtContainer = _this._txtContainers[_this._nowTurn][i];
-              txtContainer.gotoAndStop(frame[i]);
+            for(var i=0;i<frame.length;i++){
+              var frame_set_num = Math.floor(frame[i] / n);
+              var frame_num = frame[i] % n;
+              for (var h=0;h<_this._txtContainers.length;h++){
+                txtContainer = _this._txtContainers[h][i];
+                if(h == frame_set_num){
+                  txtContainer.visible = true;
+                  txtContainer.gotoAndStop(frame_num);
+                }else{
+                  txtContainer.visible = false;
+                }
+              }
             }
           }
 
@@ -93,6 +115,7 @@
             var frameSeconds = Math.floor(1000/_this._framerate);
             if(d >= frameSeconds){
               var addFrame = Math.floor(d/frameSeconds);
+              _this._oldCount = _this._count;
               _this._count+= addFrame;
               _this._oldDateTime = nowDateTime-(d%frameSeconds);
               //console.log(Math.floor(d/frameSeconds)+"/"+frameSeconds+"/");
@@ -101,8 +124,17 @@
             }
 
             if(_this._count>=_this._json.frames.length) {
-              _this._count = 0;
+              if(_this._loop == true){
+                _this._count = 0;
+              }else{
+                console.log("end");
+                _this._nowPlay = false;
+                _this._count = 0;
+              }
+
             }
+
+            _this.params.ontimeupdate();
           }
         }
       }
@@ -126,16 +158,24 @@
           }));
           _this._txtContainers[i] = []
           var txtContainer;
-          for(var m=0;m<_this._json.params.wNum;m++) {
-            for(var n=0;n<_this._json.params.hNum;n++) {
-              txtContainer = new createjs.Sprite(_this._txtSSs[i],m*_this._json.params.wNum+n);
+          if (i==0){
+            _this._bmp_wn = bmp.image.width/_this._json.params.spriteSheet.width;
+            _this._bmp_hn = bmp.image.height/_this._json.params.spriteSheet.height;
+            //alert(_this._bmp_wn+"//////////////////////"+_this._bmp_hn);
+          }
+          for(var m=0;m<_this._json.params.width/_this._json.params.spriteSheet.width;m++) {
+            for(var n=0;n<_this._json.params.height/_this._json.params.spriteSheet.height;n++) {
+              txtContainer = new createjs.Sprite(_this._txtSSs[i], m*_this._json.params.wNum+n);
               txtContainer.setTransform(m*_this._json.params.spriteSheet.width, n*_this._json.params.spriteSheet.height);
               _this._txtContainers[i].push(txtContainer);
+              _this._stage.addChild(txtContainer);
             }
           }
-        }
-        for(var i=0;i<_this._txtContainers[0].length;i++){
-          _this._stage.addChild(_this._txtContainers[0][i]);
+          /*
+          for(m=0;m<_this._txtContainers[i].length;m++){
+            _this._stage.addChild(_this._txtContainers[i][m]);
+          }
+          */
         }
       }
 
@@ -159,10 +199,16 @@
   };
   Class.prototype.play = function() {
     this._nowPlay = true;
+    var nowDate = new Date();
+    this._oldDateTime = nowDate.getTime();
       return this;
   };
   Class.prototype.playing = function() {
       return this._nowPlay;
+  };
+  Class.prototype.loop = function(bool) {
+    this._loop = bool;
+    return this._count;
   };
   Class.prototype.currentTime = function(time) {
     if(typeof time=='undefined'){
@@ -184,9 +230,11 @@
 
   var defaultPrams = {
     json: 'hoge',
-    image : 'fuga',
+    image : [],
+    loop: false,
     onmetadata: function(){},
-    onload: function(){}
+    onload: function(){},
+    ontimeupdate: function(){}
   };
 
   /**

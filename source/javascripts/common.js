@@ -4,10 +4,10 @@ $(function(){
 
   window.onload = function(){
 
-    var movie1 = $("#canvas1").moviedecoder({image:"/images/test.jpg", json:"/json/test.json",onmetadata:forceResize});
-    var movie2 = $("#canvas2").moviedecoder({image:"/images/test2.jpg", json:"/json/test2.json",onmetadata:forceResize});
-    var movie3 = $("#canvas3").moviedecoder({image:"/images/movie20140502183147.png", json:"/json/movie20140502183147.json",onmetadata:forceResize});
-    //var movie3 = $("#canvas3").moviedecoder({image:"/images/test3.jpg", json:"/json/test3.json",onmetadata:forceResize});
+    var movie1 = $("#canvas1").moviedecoder({image:["/images/movie20140513182824_0.png"], json:"/json/movie20140513182824.json",onmetadata:forceResize,loop:true});
+    var movie2 = $("#canvas2").moviedecoder({image:["/images/movie20140513152904_0.png","/images/movie20140513152904_1.png"], json:"/json/movie20140513152904.json",onmetadata:forceResize,loop:true});
+    var movie3 = $("#canvas3").moviedecoder({image:["/images/movie20140502183147.png"], json:"/json/movie20140502183147.json",onmetadata:forceResize,loop:true});
+    //var movie3 = $("#canvas3").moviedecoder({image:"/images/test3.jpg", json:"/json/test3.json",onmetadata:forceResize,loop:true});
 
     setMouseEvent($("#canvas1"), movie1);
     setMouseEvent($("#canvas2"), movie2);
@@ -25,6 +25,7 @@ $(function(){
         m.play();
       }
     });
+    /*
     j.on("mousemove", function(e){
       var mx = e.clientX / $(window).width();
       if(mx < 0){
@@ -34,6 +35,7 @@ $(function(){
       }
       m.currentTime(Math.round( m.duration()*mx) );
     });
+    */
   }
 
   var forceResize = function(){
@@ -67,7 +69,7 @@ $(function(){
         if(ts < windowHeight / ($(this).attr("height"))) {
           ts = windowHeight / ($(this).attr("height"));
         }
-        //ts = 1;
+        ts = 1;
         $(".container").css({"width":windowWidth, "height":$(this).attr("height")*ts});
         //console.log(ts);
         //tx = Math.round((windowWidth - $(this).attr("width") * ts)*0.5);
